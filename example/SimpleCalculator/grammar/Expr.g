@@ -1,22 +1,45 @@
 grammar Expr;
 
-prog	:	stat+;
+@header {
+import java.util.HashMap;
+}
 
-stat	:	expr NEWLINE
-	|	ID '=' expr NEWLINE
-	| 	NEWLINE
-	;
+@members {
+/** Map variable name to Integer object holding value */
+HashMap memory = new HashMap();
+}
 
-expr	:	multExpr (('+'|'-') multExpr)*
-	;
 
-multExpr	:	atom ('*' atom)*
-	;
+prog	    :	stat+;
 
-atom	:	INT
-	|	ID
-	|	'(' expr ')'
-	;	
+stat	    :	expr NEWLINE 
+            { System.out.println($expr.value); }
+	        |	ID '=' expr NEWLINE
+            { memory.put($ID.text, new Integer($expr.value)); }
+	        | NEWLINE
+	        ;
+
+expr	    returns [int value]
+          :	e=multExpr { $value = $e.value; } 
+            ( '+' e=multExpr { $value += $e.value; }
+            | '-' e=multExpr { $value -= $e.value; }
+            )*
+	        ;
+
+multExpr	returns [int value]
+          :	e=atom { $value = $e.value; } ('*' e=atom {$value *= $e.value;} )*
+	        ;
+
+atom	    returns [int value]
+          :	INT { $value = Integer.parseInt( $INT.text ); }
+	        |	ID
+            {
+            Integer v = (Integer) memory.get( $ID.text )
+            if ( v != null ) $value = v.intValue();
+            else System.err.println( "undefined variable " + $ID.text );
+            }
+	        |	'(' expr ')' { $value = $expr.value; } 
+	        ;	
 
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 INT :	'0'..'9'+;
