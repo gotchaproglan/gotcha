@@ -1,0 +1,5 @@
+# build dir
+build/*
+
+# output dir
+output/*
