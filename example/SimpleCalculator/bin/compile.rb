@@ -12,6 +12,6 @@ FileUtils.rm_rf( 'build' )
 FileUtils.mkdir( 'build' )
 
 # Compile lexer, paser and tests
-system("javac -verbose -classpath lib#{sep}antlr-3.1.1.jar output#{sep}*.java -d build")
-system("javac -verbose -classpath lib#{sep}antlr-3.1.1.jar:output#{sep} test#{sep}*.java -d build")
+system("javac -verbose -Xlint -classpath lib#{sep}antlr-3.1.1.jar output#{sep}*.java -d build")
+system("javac -verbose -Xlint -classpath lib#{sep}antlr-3.1.1.jar:output#{sep} test#{sep}*.java -d build")
 
